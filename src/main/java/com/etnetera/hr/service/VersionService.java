@@ -3,7 +3,6 @@ package com.etnetera.hr.service;
 import com.etnetera.hr.data.Version;
 import com.etnetera.hr.repository.VersionRepository;
 import com.etnetera.hr.to.VersionTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

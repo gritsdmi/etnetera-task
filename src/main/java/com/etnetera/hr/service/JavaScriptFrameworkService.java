@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,11 +34,11 @@ public class JavaScriptFrameworkService {
     public JavaScriptFramework createNew() {
         var frame = new JavaScriptFramework();
         frame.setName("newFramework");
-        frame.setDeprecationDate(LocalDateTime.now());
+        frame.setDeprecationDate(new Date());
         frame.setHypeLevel(HypeLevel.FIRE);
 
         var version = new Version("v 001");
-        version.setEstablishedDate(LocalDateTime.now());
+        version.setEstablishedDate(new Date());
         frame.setVersion(List.of(version));
 
         return repository.save(frame);
@@ -106,15 +107,19 @@ public class JavaScriptFrameworkService {
         return repository.findByHypeLevel(hypeLevel);
     }
 
-//    public Iterable<JavaScriptFramework> findByNonDeprecated(String hypeLevel) {
-//
-//    }
+    public Iterable<JavaScriptFramework> findNonDeprecated() {
+        return repository.findByNonDeprecated();
+    }
 
-    public void remove(long frameId) {
+    public void remove(Long frameId) {
         repository.deleteById(frameId); //todo test if version removes
     }
 
     public void remove(JavaScriptFramework framework) {
-        remove(framework.getId());
+        repository.delete(framework);
+    }
+
+    public void remove(List<JavaScriptFramework> javaScriptFrameworks) {
+        repository.deleteInBatch(javaScriptFrameworks);
     }
 }

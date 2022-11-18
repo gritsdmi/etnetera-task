@@ -16,3 +16,4 @@
 **/logback.xml
 src/impl/resources/application-local.properties
 .factorypath
+notes

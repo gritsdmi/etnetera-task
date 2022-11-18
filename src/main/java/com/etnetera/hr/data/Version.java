@@ -1,33 +1,31 @@
 package com.etnetera.hr.data;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @ToString
-//@NoArgsConstructor
-public class Version {
+@NoArgsConstructor
+public class Version extends AbstractEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
     @NotNull
     private String version;
-    private LocalDateTime establishedDate;
+    @Temporal(TemporalType.DATE)
+    private Date establishedDate;
 
     public Version(String version) {
         this.version = version;
-        this.establishedDate = LocalDateTime.now();
+        this.establishedDate = new Date();
     }
 }
 

@@ -3,7 +3,7 @@ package com.etnetera.hr.data;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,11 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "framework")
-public class JavaScriptFramework {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class JavaScriptFramework extends AbstractEntity {
 
     @Column(nullable = false, length = 30)
     private String name;
@@ -30,8 +26,8 @@ public class JavaScriptFramework {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Version> version;
 
-    @Column
-    private LocalDateTime deprecationDate;
+    @Temporal(TemporalType.DATE)
+    private Date deprecationDate;
 
     @Column
     @Enumerated(EnumType.STRING)
