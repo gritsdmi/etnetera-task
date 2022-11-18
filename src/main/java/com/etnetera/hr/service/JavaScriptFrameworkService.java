@@ -99,7 +99,7 @@ public class JavaScriptFrameworkService {
     }
 
     //finding
-    public Iterable<JavaScriptFramework> findByName(String name) {
+    public List<JavaScriptFramework> findByName(String name) {
         return repository.findByName(name);
     }
 
