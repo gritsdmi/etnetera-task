@@ -40,11 +40,13 @@ public class JavaScriptFrameworkTests {
     }
 
     @Test
-    public void whenValidName_thenEmployeeShouldBeFound() {
-        String name = "alex";
+    public void findByNameTest() {
+        String name = "ale";
+        var all = service.findAll();
         List<JavaScriptFramework> foundL = service.findByName(name);
-        var found = foundL.get(0);
-
-        assertThat(found.getName()).isEqualTo(name);
+        if(!foundL.isEmpty()){
+            var found = foundL.get(0);
+            assertThat(found.getName()).isEqualTo(name);
+        }
     }
 }

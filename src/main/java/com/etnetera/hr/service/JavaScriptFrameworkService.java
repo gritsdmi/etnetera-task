@@ -1,18 +1,21 @@
 package com.etnetera.hr.service;
 
-import com.etnetera.hr.data.HypeLevel;
 import com.etnetera.hr.data.JavaScriptFramework;
 import com.etnetera.hr.data.Version;
+import com.etnetera.hr.data.enums.DeprecatedEnum;
 import com.etnetera.hr.repository.JavaScriptFrameworkRepository;
+import com.etnetera.hr.to.FilterTO;
+import com.etnetera.hr.to.JavaScriptFrameworkTO;
+import com.etnetera.hr.to.NewVersionTO;
 import lombok.extern.java.Log;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,101 +25,106 @@ public class JavaScriptFrameworkService {
     private final JavaScriptFrameworkRepository repository;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private final VersionService versionService;
+//    @Autowired
+//    private final VersionService versionService;
 
     @Autowired
-    public JavaScriptFrameworkService(JavaScriptFrameworkRepository repository, VersionService versionService) {
+    public JavaScriptFrameworkService(JavaScriptFrameworkRepository repository
+//            , VersionService versionService
+    ) {
         this.repository = repository;
-        this.versionService = versionService;
+//        this.versionService = versionService;
     }
 
-    public JavaScriptFramework createNew() {
-        var frame = new JavaScriptFramework();
-        frame.setName("newFramework");
-        frame.setDeprecationDate(new Date());
-        frame.setHypeLevel(HypeLevel.FIRE);
-
-        var version = new Version("v 001");
-        version.setEstablishedDate(new Date());
-        frame.setVersion(List.of(version));
-
+    public JavaScriptFramework createNew(JavaScriptFrameworkTO frameTO) {
+        var frame = modelMapper.map(frameTO, JavaScriptFramework.class);
         return repository.save(frame);
     }
 
-    public Iterable<JavaScriptFramework> findAll() {
+    public List<JavaScriptFramework> findAll() {
         return repository.findAll();
     }
 
     public JavaScriptFramework save(JavaScriptFramework framework) {
-        return repository.save(framework);
-    }
-
-    public JavaScriptFramework update(JavaScriptFramework framework) {
-        var currFrameOpt = repository.findById(framework.getId());
-        if (currFrameOpt.isEmpty()) {
-            log.severe("Framework with id: " + framework.getId() + " doesn't exist");
-            return framework;
+        var curFramework = getById(framework.getId());
+        if (curFramework != null) {
+            return repository.save(framework);
         }
-
-        var currFrame = currFrameOpt.get();
-        currFrame.setName(framework.getName());
-        currFrame.setDeprecationDate(framework.getDeprecationDate());
-        currFrame.setHypeLevel(framework.getHypeLevel());
-        currFrame.setDeprecationDate(framework.getDeprecationDate());
-        //todo solve versions
-
-        //use mapper
-        var newFrame = modelMapper.map(framework, JavaScriptFramework.class);
-        var newVersion = modelMapper.map(framework.getVersion(), Version.class);
-        ///////////
-
-        return repository.save(framework);
+        return null;
     }
-
-//    public JavaScriptFramework updateHype(long frameId, String newHype) {
-//        switch (newHype) {
-////            case Hype
-//        }
-//
-//    }
 
     public JavaScriptFramework getById(long frameId) {
-        return repository.getOne(frameId);
+        var opt = repository.findById(frameId);
+        if (opt.isPresent()) {
+            return opt.get();
+        } else {
+            log.severe("Framework with id: " + frameId + " does not exist");
+        }
+        return null; //this is bad
     }
 
-    public JavaScriptFramework addNewVersion(long frameId, Version version) {
-        var curFrame = getById(frameId);
-        curFrame.getVersion().add(version);
-        return repository.save(curFrame);
+    public JavaScriptFramework addNewVersion(NewVersionTO versionTO) {
+        var framework = getById(versionTO.getFrameworkId());
+        if (framework != null) {
+            var version = modelMapper.map(versionTO.getVersion(), Version.class);
+            framework.getVersion().add(version);
+            return repository.save(framework);
+        }
+        return null; //this is bad
     }
 
-    public JavaScriptFramework addNewVersion(long frameId, String version) {
-        var framework = getById(frameId);
-        var newVersion = versionService.save(new Version(version));
-        framework.getVersion().add(newVersion);
-        return repository.save(framework);
-    }
-
-    //finding
     public List<JavaScriptFramework> findByName(String name) {
         return repository.findByName(name);
     }
 
-    public Iterable<JavaScriptFramework> findByHypeLevel(String hypeLevel) {
-        return repository.findByHypeLevel(hypeLevel);
-    }
-
-    public Iterable<JavaScriptFramework> findNonDeprecated() {
+    public List<JavaScriptFramework> findNonDeprecated() {
         return repository.findByNonDeprecated();
     }
 
+    public List<JavaScriptFramework> filter(FilterTO filterTO) {
+        var allFrameworks = findAll();
+        var filterName = filterTO.getFrameworkName();
+        var hypeLevels = filterTO.getHypeLevels();
+        var deprecated = filterTO.getDeprecated();
+
+        if (filterName != null && !filterName.isEmpty()) {
+            allFrameworks = allFrameworks.stream()
+                    .filter(framework -> framework.getName().contains(filterTO.getFrameworkName()))
+                    .collect(Collectors.toList());
+        }
+
+        if (hypeLevels != null && !hypeLevels.isEmpty()) {
+            allFrameworks = allFrameworks.stream()
+                    .filter(framework -> hypeLevels.contains(framework.getHypeLevel()))
+                    .collect(Collectors.toList());
+        }
+
+        if (deprecated != null) {
+            if (deprecated == DeprecatedEnum.TRUE) {
+                allFrameworks = allFrameworks.stream()
+                        .filter(framework -> framework.getDeprecationDate().before(new Date()))
+                        .collect(Collectors.toList());
+            } else if (deprecated == DeprecatedEnum.FALSE) {
+                allFrameworks = allFrameworks.stream()
+                        .filter(framework -> framework.getDeprecationDate().after(new Date()))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        return allFrameworks;
+    }
+
     public void remove(Long frameId) {
-        repository.deleteById(frameId); //todo test if version removes
+        var frame = getById(frameId);
+        if (frame != null) {
+            repository.deleteById(frameId);
+        } else {
+            log.severe("No framework entity with id " + frameId + " exists!");
+        }
     }
 
     public void remove(JavaScriptFramework framework) {
-        repository.delete(framework);
+        remove(framework.getId());
     }
 
     public void remove(List<JavaScriptFramework> javaScriptFrameworks) {

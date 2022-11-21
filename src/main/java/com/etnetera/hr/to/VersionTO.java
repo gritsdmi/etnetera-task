@@ -1,16 +1,15 @@
 package com.etnetera.hr.to;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Date;
 
 @ToString
-@AllArgsConstructor
+@Getter
 public class VersionTO {
 
-    private final long id;
-    private final String version;
-    private final Date established;
+    private String version;
+    private Date establishedDate;
 
 }

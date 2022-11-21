@@ -1,9 +1,9 @@
 package com.etnetera.hr.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.etnetera.hr.data.JavaScriptFramework;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,16 +13,13 @@ import java.util.List;
  *
  * @author Etnetera
  */
-//public interface JavaScriptFrameworkRepository extends CrudRepository<JavaScriptFramework, Long> {
 @Repository
 public interface JavaScriptFrameworkRepository extends JpaRepository<JavaScriptFramework, Long> {
 
-    List<JavaScriptFramework> findByName(String name);
+    @Query("select frame from JavaScriptFramework frame where " +
+            "lower(frame.name) like lower(concat('%', :pattern,'%'))")
+    List<JavaScriptFramework> findByName(@Param("pattern") String pattern);
 
-    List<JavaScriptFramework> findByHypeLevel(String hype);
-
-
-    //    List<JavaScriptFramework> findByNonDeprecated(String dateNow);
     @Query("select f from JavaScriptFramework f where (f.deprecationDate > CURRENT_DATE)")
     List<JavaScriptFramework> findByNonDeprecated();
 }

@@ -1,6 +1,9 @@
 package com.etnetera.hr.controller;
 
 import com.etnetera.hr.service.JavaScriptFrameworkService;
+import com.etnetera.hr.to.FilterTO;
+import com.etnetera.hr.to.JavaScriptFrameworkTO;
+import com.etnetera.hr.to.NewVersionTO;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +20,6 @@ import com.etnetera.hr.data.JavaScriptFramework;
 @RequestMapping(value = "/frameworks", produces = {"application/json; charset=UTF-8"})
 public class JavaScriptFrameworkController {
 
-    //    private final JavaScriptFrameworkRepository repository;
     private final JavaScriptFrameworkService service;
 
     @Autowired
@@ -26,18 +28,18 @@ public class JavaScriptFrameworkController {
     }
 
     @GetMapping
-    public Iterable<JavaScriptFramework> frameworks() {
+    public Iterable<JavaScriptFramework> getAllFrameworks() {
         return service.findAll();
     }
 
     @PostMapping
-    public JavaScriptFramework save(@RequestBody JavaScriptFramework framework) {
+    public JavaScriptFramework update(@RequestBody JavaScriptFramework framework) {
         return service.save(framework);
     }
 
     @PostMapping("/new")
-    public JavaScriptFramework create() {
-        return service.createNew();
+    public JavaScriptFramework create(@RequestBody JavaScriptFrameworkTO frameworkTO) {
+        return service.createNew(frameworkTO);
     }
 
     @GetMapping("/actual")
@@ -45,10 +47,20 @@ public class JavaScriptFrameworkController {
         return service.findNonDeprecated();
     }
 
-//    @GetMapping("/byDate") //todo filterTO
-//    public Iterable<JavaScriptFramework> getActualFrameworks() {
-//        return service.findNonDeprecated();
-//    }
+    @PostMapping("/newVersion")
+    public JavaScriptFramework addNewVersion(@RequestBody NewVersionTO newVersionTO) {
+        return service.addNewVersion(newVersionTO);
+    }
+
+    @GetMapping("/byName/{pattern}")
+    public Iterable<JavaScriptFramework> findByName(@PathVariable String pattern) {
+        return service.findByName(pattern);
+    }
+
+    @GetMapping("/filter")
+    public Iterable<JavaScriptFramework> getByFilter(@RequestBody FilterTO filterTO) {
+        return service.filter(filterTO);
+    }
 
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {

@@ -1,5 +1,6 @@
 package com.etnetera.hr.data;
 
+import com.etnetera.hr.data.enums.HypeLevel;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,7 +32,7 @@ public class JavaScriptFramework extends AbstractEntity {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private HypeLevel hypeLevel; //todo change to number
+    private HypeLevel hypeLevel; // may be should change to number
 
     public JavaScriptFramework(String name) {
         this.name = name;
