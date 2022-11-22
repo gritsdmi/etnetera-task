@@ -25,15 +25,10 @@ public class JavaScriptFrameworkService {
     private final JavaScriptFrameworkRepository repository;
     @Autowired
     private ModelMapper modelMapper;
-//    @Autowired
-//    private final VersionService versionService;
 
     @Autowired
-    public JavaScriptFrameworkService(JavaScriptFrameworkRepository repository
-//            , VersionService versionService
-    ) {
+    public JavaScriptFrameworkService(JavaScriptFrameworkRepository repository) {
         this.repository = repository;
-//        this.versionService = versionService;
     }
 
     public JavaScriptFramework createNew(JavaScriptFrameworkTO frameTO) {

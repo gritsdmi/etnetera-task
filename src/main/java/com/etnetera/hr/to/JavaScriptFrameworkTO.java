@@ -17,4 +17,12 @@ public class JavaScriptFrameworkTO {
     private Date deprecationDate;
     private HypeLevel hypeLevel;
 
+    private JavaScriptFrameworkTO(){}
+
+    public JavaScriptFrameworkTO(String name) {
+        this.name = name;
+        this.hypeLevel = HypeLevel.LOW;
+        this.deprecationDate = new Date();
+    }
+
 }
