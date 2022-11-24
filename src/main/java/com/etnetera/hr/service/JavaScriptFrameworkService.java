@@ -76,7 +76,8 @@ public class JavaScriptFrameworkService {
         return repository.findByNonDeprecated();
     }
 
-    public List<JavaScriptFramework> filter(FilterTO filterTO) {
+    //Criteria API will be better here
+    public List<JavaScriptFramework> getByFilter(FilterTO filterTO) {
         var allFrameworks = findAll();
         var filterName = filterTO.getFrameworkName();
         var hypeLevels = filterTO.getHypeLevels();

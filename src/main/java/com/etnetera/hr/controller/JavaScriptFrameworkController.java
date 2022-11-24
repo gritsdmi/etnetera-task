@@ -59,7 +59,7 @@ public class JavaScriptFrameworkController {
 
     @GetMapping("/filter")
     public Iterable<JavaScriptFramework> getByFilter(@RequestBody FilterTO filterTO) {
-        return service.filter(filterTO);
+        return service.getByFilter(filterTO);
     }
 
     @DeleteMapping("/{id}")

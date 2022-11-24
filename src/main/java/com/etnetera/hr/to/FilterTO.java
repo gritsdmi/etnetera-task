@@ -2,15 +2,15 @@ package com.etnetera.hr.to;
 
 import com.etnetera.hr.data.enums.DeprecatedEnum;
 import com.etnetera.hr.data.enums.HypeLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class FilterTO {
 
     private String frameworkName;
